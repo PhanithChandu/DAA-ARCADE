@@ -7,13 +7,14 @@ import {
   Gauge, 
   Type, 
   RefreshCcw,
-  AudioLines
+  AudioLines,
+  Square
 } from 'lucide-react';
 
 import { useAudio } from '../contexts/AudioContext';
 
 export default function AudioTutor() {
-  const { settings, updateSettings } = useAudio();
+  const { settings, updateSettings, stop, isSpeaking } = useAudio();
   const [isOpen, setIsOpen] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -37,7 +38,10 @@ export default function AudioTutor() {
   }, []);
 
   const toggleTutor = () => {
-    updateSettings({ isEnabled: !settings.isEnabled });
+    const nextEnabled = !settings.isEnabled;
+    updateSettings({ isEnabled: nextEnabled });
+    // If the user disables audio while speaking, cancel immediately.
+    if (!nextEnabled) stop();
   };
 
   return (
@@ -83,6 +87,12 @@ export default function AudioTutor() {
             {/* Menu Items */}
             <div className="p-2 space-y-1">
               <div className="px-3 py-1 text-[9px] font-black text-slate-500 uppercase tracking-widest">Configuration</div>
+              <MenuButton
+                icon={Square}
+                label="Stop Audio"
+                value={isSpeaking ? 'Playing' : 'Idle'}
+                onClick={() => stop()}
+              />
               <MenuButton 
                 icon={User} 
                 label="Tutor Voice" 

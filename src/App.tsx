@@ -18,7 +18,8 @@ import {
   Terminal,
   Cpu,
   Binary,
-  AudioLines
+  AudioLines,
+  Square
 } from 'lucide-react';
 
 // Game Components
@@ -116,8 +117,13 @@ function AppContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const CurrentGame = activeGame ? MODULES.find(m => m.id === activeGame)?.component : null;
-  const { isSpeaking, lastTranscript, spokenIndex, settings } = useAudio();
+  const { isSpeaking, lastTranscript, spokenIndex, settings, stop } = useAudio();
   const [displayTranscript, setDisplayTranscript] = useState('');
+
+  const exitModule = () => {
+    stop();
+    setActiveGame(null);
+  };
 
   useEffect(() => {
     if (!settings.textFlow) {
@@ -141,7 +147,7 @@ function AppContent() {
       <header className="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl flex items-center justify-between px-6 shrink-0 z-50">
         <div className="flex items-center gap-6">
           <button 
-            onClick={() => setActiveGame(null)}
+            onClick={exitModule}
             className="flex items-center gap-2 group cursor-pointer"
           >
             <div className="p-2 bg-emerald-500/10 rounded-lg group-hover:bg-emerald-500/20 transition-all">
@@ -154,12 +160,17 @@ function AppContent() {
           </button>
 
           {activeGame && (
-             <div className="hidden md:flex items-center gap-3 pl-6 border-l border-slate-800">
-               <ChevronLeft className="w-4 h-4 text-slate-600" />
-               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                 System Profile: {MODULES.find(m => m.id === activeGame)?.name}
-               </span>
-             </div>
+            <button
+              onClick={exitModule}
+              className="hidden md:flex items-center gap-3 pl-6 border-l border-slate-800 hover:text-slate-200 transition-colors group"
+              aria-label="Back to modules"
+              title="Back to modules"
+            >
+              <ChevronLeft className="w-4 h-4 text-slate-600 group-hover:text-emerald-400 transition-colors" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-slate-200 transition-colors">
+                System Profile: {MODULES.find(m => m.id === activeGame)?.name}
+              </span>
+            </button>
           )}
         </div>
 
@@ -178,10 +189,11 @@ function AppContent() {
            
            {activeGame && (
              <button 
-               onClick={() => setActiveGame(null)}
+               onClick={exitModule}
                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 uppercase tracking-tight border border-slate-700"
              >
-               Exit Module
+               <ChevronLeft className="w-4 h-4" />
+               Back
              </button>
            )}
         </div>
@@ -241,6 +253,14 @@ function AppContent() {
                       <div className="p-8 space-y-4">
                         <div className={`p-3 w-fit bg-${mod.color}-500/10 rounded-xl`}>
                           <mod.icon className={`w-8 h-8 text-${mod.color}-400`} />
+                         <button
+                           onClick={stop}
+                           className="pointer-events-auto shrink-0 p-2 rounded-xl bg-slate-800/60 hover:bg-slate-700/70 border border-slate-700 text-slate-200 transition-colors"
+                           aria-label="Stop audio"
+                           title="Stop audio"
+                         >
+                           <Square className="w-4 h-4" />
+                         </button>
                         </div>
                         <div className="space-y-1">
                           <h3 className="text-xl font-black uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors">{mod.name}</h3>
