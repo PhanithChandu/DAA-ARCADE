@@ -1,0 +1,5 @@
+{
+  "name": "DAA Arcade: Algorithmic Tactical Hub",
+  "description": "A comprehensive interactive suite for learning Design and Analysis of Algorithms. Features visualizations for Dijkstra, Knapsack DP, Sorting complexities, Prim's MST, Huffman coding, and N-Queens backtracking.",
+  "requestFramePermissions": []
+}
